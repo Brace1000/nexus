@@ -27,10 +27,10 @@ tar -xzf nexus-${NEXUS_VERSION}-unix.tar.gz
 ln -sf nexus-${NEXUS_VERSION} nexus
 
 echo "Setting ownership..."
-chown -R $NEXUS_USER:$NEXUS_USER $NEXUS_HOME
+chown -R $NEXUS_USER:$NEXUS_USER nexus-${NEXUS_VERSION}
 chown -R $NEXUS_USER:$NEXUS_USER $NEXUS_DATA
 
-echo "run_as_user=\"$NEXUS_USER\"" > $NEXUS_HOME/bin/nexus.rc
+echo "run_as_user=\"$NEXUS_USER\"" > nexus-${NEXUS_VERSION}/bin/nexus.rc
 
 cat > /etc/systemd/system/nexus.service <<EOF
 [Unit]
@@ -42,8 +42,8 @@ Type=forking
 LimitNOFILE=65536
 User=$NEXUS_USER
 Group=$NEXUS_USER
-ExecStart=$NEXUS_HOME/bin/nexus start
-ExecStop=$NEXUS_HOME/bin/nexus stop
+ExecStart=/opt/nexus-${NEXUS_VERSION}/bin/nexus start
+ExecStop=/opt/nexus-${NEXUS_VERSION}/bin/nexus stop
 Restart=on-abort
 TimeoutSec=600
 
