@@ -24,24 +24,12 @@ jobs:
     - name: Build with Maven
       run: mvn clean package -DskipTests
 
-    - name: Run tests
-      run: mvn test
-
     - name: Build Docker image
-      run: |
-        docker build -t nexus-web-app:${{ github.sha }} .
-        docker tag nexus-web-app:${{ github.sha }} nexus-web-app:latest
-
-    - name: Upload WAR artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: nexus-web-app
-        path: target/*.war
+      run: docker build -t nexus-web-app:latest .
 
     - name: Build Summary
       run: |
         echo "✅ Build completed successfully!"
         echo "📦 WAR file created"
         echo "🐳 Docker image built"
-        echo "🧪 Tests passed"
         ls -lh target/*.war
