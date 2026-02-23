@@ -158,10 +158,11 @@ mvn spring-boot:run
 
 ### Problem: "Port 8080 already in use"
 ```bash
-# Find what's using port 8080
-lsof -i :8080
+# Quick fix - use helper script
+./kill-port-8080.sh
 
-# Kill it (replace PID with actual number)
+# OR manually:
+lsof -i :8080
 kill -9 <PID>
 ```
 
