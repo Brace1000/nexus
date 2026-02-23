@@ -7,7 +7,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-  build-and-publish:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,23 +27,21 @@ jobs:
     - name: Run tests
       run: mvn test
 
-    - name: Publish artifacts to Nexus
-      run: mvn deploy -DskipTests
-      env:
-        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-
     - name: Build Docker image
       run: |
         docker build -t nexus-web-app:${{ github.sha }} .
         docker tag nexus-web-app:${{ github.sha }} nexus-web-app:latest
 
-    - name: Login to Nexus Docker Registry
-      run: echo "${{ secrets.NEXUS_PASSWORD }}" | docker login localhost:8082 -u "${{ secrets.NEXUS_USERNAME }}" --password-stdin
+    - name: Upload WAR artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: nexus-web-app
+        path: target/*.war
 
-    - name: Push Docker image to Nexus
+    - name: Build Summary
       run: |
-        docker tag nexus-web-app:latest localhost:8082/nexus-web-app:${{ github.sha }}
-        docker tag nexus-web-app:latest localhost:8082/nexus-web-app:latest
-        docker push localhost:8082/nexus-web-app:${{ github.sha }}
-        docker push localhost:8082/nexus-web-app:latest
+        echo "✅ Build completed successfully!"
+        echo "📦 WAR file created"
+        echo "🐳 Docker image built"
+        echo "🧪 Tests passed"
+        ls -lh target/*.war
